@@ -1,0 +1,199 @@
+OVERVIEW
+The Medallion Architecture is a layered data engineering framework designed to simplify and streamline the journey from raw data to refined, trustworthy insights. It uses three distinct layers: Bronze for raw data ingestion, Silver for incremental cleaning and transformation, and Gold for advanced analytics and reporting.
+
+
+CURRENT ON PREM SOURCES
+JDE
+
+Energy Force
+
+OnBase
+
+
+
+The Bronze layer contains multiple Fabric Lakehouses
+
+Separated by source to minimize the number of tables in each Lakehouse making them easier to navigate.
+
+The Bronze Layer contains the raw data copied 1-for-1 from each on prem source system. 
+
+Pipeline Elements:
+
+MFAO to Bronze - Load Reload Pipeline
+
+This pipeline is used on an ad hoc basis to Full Load all the data for the Customer Portal and BI Reporting. 
+
+This pipeline is automatically triggered as part of the MFAO to AZSQL - Load Reload Pipeline 
+
+MFAO to Bronze - Multiple Runs Per Day Pipeline
+
+This is the primary pipeline used to load data for the Customer Portal. It uses both Incremental Refresh and Full Load methods depending on the table.
+
+This pipeline is automatically triggered as part of the MFAO to AZSQL - Multi Runs Per Day Pipeline 
+
+MFAO to Bronze - Once Daily Pipeline
+
+This pipeline is not used for any Customer Portal tables. It is used to load the BI Reporting tables that only need to load once per day.
+
+This pipeline is automatically triggered as part of the MFAO to Gold - Once Daily Pipeline 
+
+Remaining folders
+
+Each Remaining folder contains items that are in support of the Microsoft Fabric Data Factory Operations. There is little need to directly use the elements within the remaining folders as they are, mostly, used by the Pipelines
+
+SILVER LAYER 
+image-20250219-231710.png
+The Silver layer contains multiple Fabric Lakehouses
+
+Separated by source to minimize the number of tables in each Lakehouse making them easier to navigate.
+
+Pipeline Elements:
+
+MFAO to AZSQL - Load Reload Pipeline
+
+This pipeline is used on an ad hoc basis to Full Load all the data for the Customer Portal and BI Reporting. 
+
+MFAO to AZSQL - Multiple Runs Per Day Pipeline
+
+This is the primary pipeline used to load data for the Customer Portal. It uses both Incremental Refresh and Full Load methods depending on the table.
+
+MFAO to Gold - Once Daily Pipeline
+
+This pipeline is not used for any Customer Portal tables. It is used to load the BI Reporting tables that only need to load once per day.
+
+Remaining folders
+
+Each Remaining folder contains items that are in support of the Microsoft Fabric Data Factory Operations. There is little need to directly use the elements within the remaining folders as they are, mostly, used by the Pipelines.
+
+GOLD LAYER 
+image-20250219-223902.png
+The Gold Layer holds two primary elements:
+
+Gold Landing
+
+The Gold Landing contains all tables from the Silver Lakehouse as Shortcuts.
+
+Gold Warehouses allow for Direct SQL Queries of Lakehouse data, via the SQL Analytics Endpoint. However, for this Direct SQL Query to work, the Lakehouse must be in the same Workspace as the Warehouse. For access control reasons the Gold Workspace and Silver Workspace are separate. This creates the need for the Gold Landing Lakehouse in the Gold Workspace.
+
+Gold Warehouse
+
+The warehouse contains all Queries, Views, Tables, and Stored Procedures required for both Customer Portal and BI Reporting.
+
+The warehouse is a traditional Analytics Platform that uses TSQL to view and manipulate data.
+
+The data is stored in columnar format as Delta Parquet files.
+
+Fabric Data Warehouses are best for analytics workloads and not transactional workloads. Because of this the Customer Portal is using a Azure SQL Database as it’s backend, with data fed from the Gold Warehouse.
+
+When a Fabric Data Warehouse is provisioned, a default Semantic Model is automatically created. It is best practice to create separate Semantic Warehouses for reporting purposes and ignore the default Semantic Model
+
+Shortcuts are a feature of Microsoft OneLake that allow reference and usage of Lakehouse Tables from another source without having to physically make another copy of the data. 
+
+Pipeline Elements:
+
+MFAO to AZSQL - Load Reload Pipeline
+
+This pipeline is used on an ad hoc basis to Full Load all the data for the Customer Portal and BI Reporting. 
+
+MFAO to AZSQL - Multiple Runs Per Day Pipeline
+
+This is the primary pipeline used to load data for the Customer Portal. It uses both Incremental Refresh and Full Load methods depending on the table.
+
+MFAO to Gold - Once Daily Pipeline
+
+This pipeline is not used for any Customer Portal tables. It is used to load the BI Reporting tables that only need to load once per day.
+
+Remaining folders
+
+Each Remaining folder contains items that are in support of the Microsoft Fabric Data Factory Operations. There is little need to directly use the elements within the remaining folders as they are, mostly, used by the Pipelines.
+
+ 
+BRONZE LAYER
+
+The Bronze layer contains multiple Fabric Lakehouses
+
+Separated by source to minimize the number of tables in each Lakehouse making them easier to navigate.
+
+The Bronze Layer contains the raw data copied 1-for-1 from each on prem source system.
+
+image-20250219-231634.png
+Pipeline Elements:
+
+MFAO to Bronze - Load Reload Pipeline
+
+This pipeline is used on an ad hoc basis to Full Load all the data for the Customer Portal and BI Reporting.
+
+This pipeline is automatically triggered as part of the MFAO to AZSQL - Load Reload Pipeline
+
+MFAO to Bronze - Multiple Runs Per Day Pipeline
+
+This is the primary pipeline used to load data for the Customer Portal. It uses both Incremental Refresh and Full Load methods depending on the table.
+
+This pipeline is automatically triggered as part of the MFAO to AZSQL - Multi Runs Per Day Pipeline
+
+MFAO to Bronze - Once Daily Pipeline
+
+This pipeline is not used for any Customer Portal tables. It is used to load the BI Reporting tables that only need to load once per day.
+
+This pipeline is automatically triggered as part of the MFAO to Gold - Once Daily Pipeline
+
+Remaining folders
+
+Each Remaining folder contains items that are in support of the Microsoft Fabric Data Factory Operations. There is little need to directly use the elements within the remaining folders as they are, mostly, used by the Pipelines
+
+
+ 
+SILVER LAYER 
+
+The Silver layer contains multiple Fabric Lakehouses
+
+Separated by source to minimize the number of tables in each Lakehouse making them easier to navigate.
+
+Pipeline Elements:
+
+MFAO to AZSQL - Load Reload Pipeline
+
+This pipeline is used on an ad hoc basis to Full Load all the data for the Customer Portal and BI Reporting.
+
+MFAO to AZSQL - Multiple Runs Per Day Pipeline
+
+This is the primary pipeline used to load data for the Customer Portal. It uses both Incremental Refresh and Full Load methods depending on the table.
+
+MFAO to Gold - Once Daily Pipeline
+
+This pipeline is not used for any Customer Portal tables. It is used to load the BI Reporting tables that only need to load once per day.
+
+Remaining folders
+
+Each Remaining folder contains items that are in support of the Microsoft Fabric Data Factory Operations. There is little need to directly use the elements within the remaining folders as they are, mostly, used by the Pipelines.
+
+
+
+GOLD LANDING
+
+
+The Gold layer consists of both the Gold Dev and Gold Prod workspaces.
+
+**Screenshots or links to the workspaces**
+
+Gold Landing contains shortcuts to all of the tables in the Silver layer using a live shortcut that connects the Silver lakehouse to the Gold Landing. Reports can query from the Gold warehouse directly because the reports are also located in the Gold-level workspace. Reports cannot direct query from Silver (a known limitation of Data Fabric). This is the purpose of Gold Landing.
+
+The result is that Gold Landing is copy of the Silver Lakehouse. Therefore, there are no extractions, transformations, or loads (ETL) between the Silver layer and the Gold Landing.  Views, tables, SQL queries, stored procedures, etc. can all be done in Gold Landing.
+
+In Fabric, using Shortcuts is not a replication process. What are Microsoft Fabric Shortcuts?
+
+**Draw some sort of diagram for the above process**
+
+
+
+
+MFAO to AZSQL - Load Reload Pipeline
+
+There is no Silver to Gold Pipeline. All tables in the Silver Lakehouse are connected to the GoldLanding Lakehouse via Shortcuts. It is not necessary to copy the data between Silver Layer and the Gold Layer
+ 
+
+ 
+
+ 
+
+ 
